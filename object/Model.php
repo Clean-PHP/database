@@ -29,9 +29,6 @@ abstract class Model extends ArgObject
 
     public function onParseType(string $key, mixed &$val, mixed $demo): bool
     {
-        if (is_bool($demo)) {
-            $val = ($val === "1" || $val === 1 || $val === "true" || $val === "on" || $val === true);
-        }
         if($this->fromDb && is_string($val) && (is_array($demo)||is_object($demo))){
             $val = __unserialize($val);
         }
@@ -86,11 +83,9 @@ abstract class Model extends ArgObject
     }
 
 
-    public function onToArray($key, &$value)
+    public function onToArray(string $key, mixed &$value, &$ret): void
     {
-        if (is_bool($value)) {
-            $value = $value ? 1 : 0;
-        }
+       parent::onToArray($key,$value,$ret);
         if(is_array($value)||is_object($value)){
             $value = __serialize($value);
         }
