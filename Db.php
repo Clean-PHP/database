@@ -263,7 +263,7 @@ class Db
     {
         $data = $sql_path;
         if (file_exists($data)) $data = file_get_contents($data);
-        $this->db->execute($data);
+        $this->execute($data);
     }
 
     /**
