@@ -97,7 +97,7 @@ class Mysql extends Driver
 
         elseif ($sqlKey->type === SqlKey::TYPE_TEXT && $sqlKey->length !== 0) return "`$sqlKey->name` VARCHAR(" . $sqlKey->length . ") DEFAULT '$sqlKey->value'";
 
-        elseif ($sqlKey->type === SqlKey::TYPE_TEXT && $sqlKey->length === 0 && $sqlKey->value !== null || $sqlKey->type === SqlKey::TYPE_ARRAY) return "`$sqlKey->name` LONGTEXT NOT NULL";
+        elseif ($sqlKey->type === SqlKey::TYPE_TEXT && $sqlKey->length === 0 && $sqlKey->value !== null || $sqlKey->type === SqlKey::TYPE_ARRAY) return "`$sqlKey->name` LONGTEXT  DEFAULT '$sqlKey->value'";
 
         elseif ($sqlKey->type === SqlKey::TYPE_TEXT && $sqlKey->length === 0 && $sqlKey->value === null) return "`$sqlKey->name` TEXT";
 

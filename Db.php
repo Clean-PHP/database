@@ -261,9 +261,31 @@ class Db
      */
     public function import(string $sql_path)
     {
-        $data = $sql_path;
-        if (file_exists($data)) $data = file_get_contents($data);
-        $this->execute($data);
+        if (!file_exists($sql_path))return;
+
+        $file = fopen($sql_path, "r");
+        while (!feof($file)) {
+            $query = '';
+            while (($line = fgets($file)) !== false) {
+                // Skip comments and empty lines
+                if (trim($line) == '' || str_starts_with($line, '--')) {
+                    continue;
+                }
+
+                $query .= $line;
+                // If the line ends with a semicolon, execute the query
+                if (str_ends_with(trim($line), ';')) {
+                    try {
+                        $this->db->getDbConnect()->exec($query);
+                    } catch (PDOException $e) {
+                        Log::record("Db init初始化失败",$e->getMessage());
+                    }
+                    // Reset the query string for the next query
+                    $query = '';
+                }
+            }
+        }
+        fclose($file);
     }
 
     /**
@@ -271,6 +293,7 @@ class Db
      * @param ?string $output 输出路径
      * @param bool $only_struct 是否只导出结构
      * @return string
+
      */
     public function export(string $output = null, bool $only_struct = false): string
     {
