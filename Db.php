@@ -201,40 +201,38 @@ class Db
             'VALUES', 'UPDATE', 'SET', 'DELETE', 'TRUNCATE', 'CREATE', 'TABLE',
             'ALTER', 'DROP', 'INDEX', 'VIEW', 'GRANT', 'REVOKE', 'UNION', 'ALL',
             'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'PRIMARY', 'KEY', 'FOREIGN',
-            'REFERENCES', 'CASCADE', 'CONSTRAINT'
+            'REFERENCES', 'CASCADE', 'CONSTRAINT',"IF","EXISTS","NOT","BIGINT","LONGTEXT","DEFAULT","TEXT","INT","TINYINT","FLOAT","AUTO_INCREMENT","CHARSET","ENGINE"
             // 可根据需要添加其他关键词
         );
 
-        // 标记关键词
-        $highlightedSQL = preg_replace_callback('/\b(' . implode('|', $keywords) . ')\b/i', function ($matches) {
-            return '<span style="color: blue;">' . $matches[0] . '</span>';
+        // 定义正则表达式模式
+        $pattern = '/\b(' . implode('|', $keywords) . ')\b|(\'[^\']*\'|"[^"]*")|\b(\d+)\b|(:[\w]+)|(`[\w]+`)|(--.*)/i';
+
+        // 替换操作
+        return preg_replace_callback($pattern, function ($matches) {
+            print_r($matches);
+            if (!empty($matches[1])) {
+                // 关键词
+                return '<span style="color: blue;">' . $matches[0] . '</span>';
+            } elseif (!empty($matches[2])) {
+                // 字符串值
+                return '<span style="color: green;">' . $matches[0] . '</span>';
+            } elseif (!empty($matches[3])) {
+                // 数字值
+                return '<span style="color: orange;">' . $matches[0] . '</span>';
+            } elseif (!empty($matches[4])) {
+                // 参数绑定
+                return '<span style="color: purple;">' . $matches[0] . '</span>';
+            } elseif (!empty($matches[5])) {
+                // 表名和字段名
+                return '<span style="color: red;">' . $matches[0] . '</span>';
+            } else {
+                // 注释
+                return '<span style="color: gray;">' . $matches[0] . '</span>';
+            }
         }, $sql);
-
-        // 标记字符串值
-        $highlightedSQL = preg_replace_callback("/'(.*?)'/i", function ($matches) {
-            return '<span style="color: green;">' . $matches[0] . '</span>';
-        }, $highlightedSQL);
-
-        // 标记数字值
-        $highlightedSQL = preg_replace_callback("/\b\d+\b/", function ($matches) {
-            return '<span style="color: orange;">' . $matches[0] . '</span>';
-        }, $highlightedSQL);
-
-        // 标记参数绑定
-        $highlightedSQL = preg_replace_callback("/:([\w]+)/i", function ($matches) {
-            return '<span style="color: purple;">' . $matches[0] . '</span>';
-        }, $highlightedSQL);
-
-        // 标记表名和字段名
-        $highlightedSQL = preg_replace_callback('/(`?[\w]+`?)/i', function ($matches) {
-            return '<span style="color: red;">' . $matches[0] . '</span>';
-        }, $highlightedSQL);
-
-        // 标记注释
-        $highlightedSQL = preg_replace('/--.*$/m', '<span style="color: gray;">$0</span>', $highlightedSQL);
-
-        return $highlightedSQL;
     }
+
 
 
 
