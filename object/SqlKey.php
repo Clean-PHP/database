@@ -52,6 +52,7 @@ class SqlKey
         elseif (is_double($default_value)) $this->type = self::TYPE_FLOAT;
         elseif(is_array($default_value)||is_object($default_value)){
             $this->type = self::TYPE_ARRAY;
+            $this->value = __serialize($default_value);
         }else $this->type = self::TYPE_TEXT;
 
 
