@@ -40,7 +40,7 @@ class Field
     {
         if (!is_string($name)) return false;
 
-        return preg_match_all('/^[0-9a-zA-Z_.\s]+$/', $name);
+        return preg_match_all('/^[0-9a-zA-Z_.\s*()]+$/', $name);
     }
 
     /**
