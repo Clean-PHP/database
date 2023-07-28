@@ -210,7 +210,7 @@ class Db
 
         // 替换操作
         return preg_replace_callback($pattern, function ($matches) {
-            print_r($matches);
+
             if (!empty($matches[1])) {
                 // 关键词
                 return '<span style="color: blue;">' . $matches[0] . '</span>';
