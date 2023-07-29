@@ -122,7 +122,7 @@ class Db
         }
         if($shouldCache ){
 
-           $data = Cache::init(0,$cacheDir.$baseTables.DS)->get($sql.join(',',$params));
+           $data = Cache::init(Variables::get("sql_cache_time",0),$cacheDir.$baseTables.DS)->get($sql.join(',',$params));
            if(!empty($data)){
                return $data;
            }
@@ -180,7 +180,7 @@ class Db
         }
         if ($ret_data !== null) {
             if($shouldCache && !empty($ret_data)){
-                Cache::init(0,$cacheDir.$baseTables.DS)->set($sql.join(',',$params),$ret_data);
+                Cache::init(Variables::get("sql_cache_time",0),$cacheDir.$baseTables.DS)->set($sql.join(',',$params),$ret_data);
             }
             return $ret_data;
         }

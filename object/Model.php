@@ -34,6 +34,9 @@ abstract class Model extends ArgObject
         }
 
         if ($this->fromDb && is_string($demo) && !$this->inNofilter($key)) {
+            if(empty($val)){
+                $val = $demo;
+            }
             $val = htmlspecialchars($val);
         }
         return true;
