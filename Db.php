@@ -129,7 +129,8 @@ class Db
         }elseif(!$readonly){
             //删除缓存,数据库数据发生变化后清除缓存
             foreach ($tables as $table){
-                Cache::init(0,$cacheDir.$table.DS)->empty();
+                Cache::init(0,$cacheDir)->emptyPath($table);
+
             }
 
         }
@@ -180,7 +181,7 @@ class Db
         }
         if ($ret_data !== null) {
             if($shouldCache && !empty($ret_data)){
-                Cache::init(Variables::get("sql_cache_time",0),$cacheDir.$baseTables.DS)->set($sql.join(',',$params),$ret_data);
+                Cache::init(0,$cacheDir.$baseTables.DS)->set($sql.join(',',$params),$ret_data);
             }
             return $ret_data;
         }
