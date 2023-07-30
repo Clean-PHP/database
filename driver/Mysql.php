@@ -82,7 +82,7 @@ class Mysql extends Driver
             $sqlKey->value = str_replace("'", "\'", $sqlKey->value);
         if (in_array($sqlKey->name,$unique)){
             if($sqlKey->type === SqlKey::TYPE_INT)return "`$sqlKey->name` BIGINT DEFAULT $sqlKey->value UNIQUE";
-            if($sqlKey->type === SqlKey::TYPE_TEXT)return "`$sqlKey->name` VARCHAR(512) DEFAULT '$sqlKey->value' UNIQUE";
+            if($sqlKey->type === SqlKey::TYPE_TEXT)return "`$sqlKey->name` VARCHAR(191) DEFAULT '$sqlKey->value' UNIQUE";
         }
         if ($sqlKey->type === SqlKey::TYPE_INT && $sqlKey->auto) return "`$sqlKey->name` BIGINT AUTO_INCREMENT";
 
