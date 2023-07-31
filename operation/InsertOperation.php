@@ -30,7 +30,7 @@ class InsertOperation extends BaseOperation
      * @param $m
      * @param int $model insert模式
      */
-    public function __construct(Db &$db,  $m, int $model = self::INSERT_NORMAL)
+    public function __construct(Db &$db,  $m, int $model = self::INSERT_IGNORE)
     {
         parent::__construct($db, $m);
         $this->opt = [];
