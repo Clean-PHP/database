@@ -121,7 +121,7 @@ abstract class BaseOperation
                             if (isset($conditions[$key2])) {
                                 $value = $conditions[$key2];
                                 unset($conditions[$key2]);
-                                $values = explode(",", $value);
+                                $values = is_string($value)?explode(",", $value):$value;
                                 $new = "";
                                 $len = sizeof($values);
                                 for ($j = 0; $j < $len; $j++) {

@@ -121,7 +121,6 @@ class Db
             $tables[] = $baseTables;
         }
         if($shouldCache ){
-
            $data = Cache::init(Variables::get("sql_cache_time",0),$cacheDir.$baseTables.DS)->get($sql.join(',',$params));
            if(!empty($data)){
                return $data;
@@ -130,7 +129,6 @@ class Db
             //删除缓存,数据库数据发生变化后清除缓存
             foreach ($tables as $table){
                 Cache::init(0,$cacheDir)->emptyPath($table);
-
             }
 
         }
