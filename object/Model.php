@@ -18,9 +18,9 @@ use cleanphp\base\ArgObject;
 
 abstract class Model extends ArgObject
 {
+    public int $id = 0;
     private bool $fromDb = false;
 
-    public int $id = 0;
     public function __construct(array $item = [], $fromDb = false)
     {
         $this->fromDb = $fromDb;
@@ -29,12 +29,12 @@ abstract class Model extends ArgObject
 
     public function onParseType(string $key, mixed &$val, mixed $demo): bool
     {
-        if($this->fromDb && is_string($val) && (is_array($demo)||is_object($demo))){
+        if ($this->fromDb && is_string($val) && (is_array($demo) || is_object($demo))) {
             $val = __unserialize($val);
         }
 
         if ($this->fromDb && is_string($demo) && !$this->inNofilter($key)) {
-            if(empty($val)){
+            if (empty($val)) {
                 $val = $demo;
             }
             $val = htmlspecialchars($val);
@@ -47,8 +47,9 @@ abstract class Model extends ArgObject
      * @param $key
      * @return bool
      */
-    private function inNofilter($key):bool{
-        return in_array($key,$this->getNofilter());
+    private function inNofilter($key): bool
+    {
+        return in_array($key, $this->getNofilter());
     }
 
     /**
@@ -64,7 +65,8 @@ abstract class Model extends ArgObject
      * 获取唯一字段
      * @return array
      */
-    public function getUnique():array{
+    public function getUnique(): array
+    {
         return [];
     }
 
@@ -82,19 +84,22 @@ abstract class Model extends ArgObject
      */
     public function getPrimaryKey(): SqlKey
     {
-        return new SqlKey('id',0,true);
+        return new SqlKey('id', 0, true);
     }
 
 
     public function onToArray(string $key, mixed &$value, &$ret): void
     {
-       parent::onToArray($key,$value,$ret);
-        if(is_array($value)||is_object($value)){
+        parent::onToArray($key, $value, $ret);
+        if (is_array($value) || is_object($value)) {
             $value = __serialize($value);
         }
     }
 
-
+    public function getDisableKeys(): array
+    {
+        return ["id"];
+    }
 
 
 }
