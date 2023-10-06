@@ -156,9 +156,8 @@ abstract class Dao
      * 获取指定参数的求和
      * @param array $condition
      * @param string $field
-     * @return int
      */
-    function getSum(array $condition = [], string $field = "id"): int
+    function getSum(array $condition = [], string $field = "id")
     {
         return $this->select()->sum($condition, $field);
     }
