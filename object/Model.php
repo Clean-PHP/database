@@ -39,6 +39,11 @@ abstract class Model extends ArgObject
             }
             $val = htmlspecialchars($val);
         }
+
+        if (!$this->fromDb && (is_array($demo) || is_object($demo)) && is_string($val)) {
+            $val = json_decode($val);
+        }
+
         return true;
     }
 
