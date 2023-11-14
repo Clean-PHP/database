@@ -78,7 +78,7 @@ class Db
         $instance = Variables::get("db_$hash");
         if (empty($instance)) {
             $instance = new self($dbFile);
-            Variables::set("db_$hash",$instance);
+            Variables::set("db_$hash", $instance);
         }
 
         return $instance;
@@ -112,23 +112,24 @@ class Db
      */
     public function execute(string $sql, array $params = [], bool $readonly = false, bool $cache = false, array $tables = []): int|array
     {
-        $shouldCache = $readonly && $cache && !str_contains($sql,"like");
+        $shouldCache = $readonly && $cache && !str_contains($sql, "like");
 
-        $cacheDir = Variables::getCachePath("sql",DS);
+        $cacheDir = Variables::getCachePath("sql", DS);
 
-        $baseTables = join("_",$tables);
-        if(!in_array($baseTables,$tables)){
+        $baseTables = join("_", $tables);
+        if (!in_array($baseTables, $tables)) {
             $tables[] = $baseTables;
         }
-        if($shouldCache ){
-           $data = Cache::init(Variables::get("sql_cache_time",0),$cacheDir.$baseTables.DS)->get($sql.join(',',$params));
-           if(!empty($data)){
-               return $data;
-           }
-        }elseif(!$readonly){
+        if ($shouldCache) {
+            $data = Cache::init(Variables::get("sql_cache_time", 0), $cacheDir . $baseTables . DS)->get($sql . join(',', $params));
+            if (!empty($data)) {
+                return $data;
+            }
+        } elseif (!$readonly) {
             //删除缓存,数据库数据发生变化后清除缓存
-            foreach ($tables as $table){
-                Cache::init(0,$cacheDir)->emptyPath($table);
+            foreach ($tables as $table) {
+                Cache::init(0, $cacheDir)->emptyPath($table);
+                File::mkDir($cacheDir . $table);
             }
 
         }
@@ -157,11 +158,11 @@ class Db
             $sth->bindValue($k, $v, $data_type);
         }
         $ret_data = null;
-        try{
+        try {
             if ($sth->execute()) {
                 $ret_data = $readonly ? $sth->fetchAll(PDO::FETCH_ASSOC) : $sth->rowCount();
             }
-        }catch (PDOException $exception){
+        } catch (PDOException $exception) {
             throw new DbExecuteError(sprintf("执行SQL语句出错：\r\n%s\r\n\r\n错误信息：%s", $this->highlightSQL($sql), $exception->getMessage()));
         }
         if (App::$debug) {
@@ -173,13 +174,13 @@ class Db
                 $sql_default = str_replace($k, "\"$v\"", $sql_default);
             }
             Log::record("SQL", $sql_default);
-            $t = round($end * 1000,4);
-            App::$db+=$t;
+            $t = round($end * 1000, 4);
+            App::$db += $t;
             Log::record("SQL", sprintf("执行时间：%s 毫秒", $t));
         }
         if ($ret_data !== null) {
-            if($shouldCache && !empty($ret_data)){
-                Cache::init(0,$cacheDir.$baseTables.DS)->set($sql.join(',',$params),$ret_data);
+            if ($shouldCache && !empty($ret_data)) {
+                Cache::init(0, $cacheDir . $baseTables . DS)->set($sql . join(',', $params), $ret_data);
             }
             return $ret_data;
         }
@@ -200,7 +201,7 @@ class Db
             'VALUES', 'UPDATE', 'SET', 'DELETE', 'TRUNCATE', 'CREATE', 'TABLE',
             'ALTER', 'DROP', 'INDEX', 'VIEW', 'GRANT', 'REVOKE', 'UNION', 'ALL',
             'CASE', 'WHEN', 'THEN', 'ELSE', 'END', 'PRIMARY', 'KEY', 'FOREIGN',
-            'REFERENCES', 'CASCADE', 'CONSTRAINT',"IF","EXISTS","NOT","BIGINT","LONGTEXT","DEFAULT","TEXT","INT","TINYINT","FLOAT","AUTO_INCREMENT","CHARSET","ENGINE"
+            'REFERENCES', 'CASCADE', 'CONSTRAINT', "IF", "EXISTS", "NOT", "BIGINT", "LONGTEXT", "DEFAULT", "TEXT", "INT", "TINYINT", "FLOAT", "AUTO_INCREMENT", "CHARSET", "ENGINE"
             // 可根据需要添加其他关键词
         );
 
@@ -233,9 +234,6 @@ class Db
     }
 
 
-
-
-
     public function __destruct()
     {
         unset($this->db);
@@ -258,7 +256,7 @@ class Db
      */
     public function import(string $sql_path)
     {
-        if (!file_exists($sql_path))return;
+        if (!file_exists($sql_path)) return;
 
         $file = fopen($sql_path, "r");
         while (!feof($file)) {
@@ -275,7 +273,7 @@ class Db
                     try {
                         $this->db->getDbConnect()->exec($query);
                     } catch (PDOException $e) {
-                        Log::record("Db init初始化失败",$e->getMessage());
+                        Log::record("Db init初始化失败", $e->getMessage());
                     }
                     // Reset the query string for the next query
                     $query = '';
@@ -290,7 +288,6 @@ class Db
      * @param ?string $output 输出路径
      * @param bool $only_struct 是否只导出结构
      * @return string
-
      */
     public function export(string $output = null, bool $only_struct = false): string
     {
