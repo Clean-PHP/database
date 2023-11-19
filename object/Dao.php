@@ -38,22 +38,22 @@ abstract class Dao
     /**
      * @param string|null $model 指定具体模型
      */
-    public function __construct(string $model = null,string $child = null)
+    public function __construct(string $model = null, string $child = null)
     {
         $this->dbInit();
-        if(!empty($model)){
+        if (!empty($model)) {
             $this->model = $model;
-        }elseif(!empty($child)){
-            $class = str_replace(["dao","Dao"],["model","Model"],$child);
+        } elseif (!empty($child)) {
+            $class = str_replace(["dao", "Dao"], ["model", "Model"], $child);
             $this->child = $child;
-            if(class_exists($class)){
+            if (class_exists($class)) {
                 $this->model = $class;
-                $table =  $this->getTable();
+                $table = $this->getTable();
                 try {
                     $result = $this->db->getDriver()->getDbConnect()->query(/** @lang text */ "SELECT count(*) FROM `{$table}` LIMIT 1");
                     $table_exist = $result instanceof PDOStatement && ($result->rowCount() === 1);
-                }catch (Throwable $exception){
-                    if($exception instanceof ExitApp){
+                } catch (Throwable $exception) {
+                    if ($exception instanceof ExitApp) {
                         throw $exception;
                     }
                     $table_exist = false;
@@ -62,7 +62,7 @@ abstract class Dao
                     try {
                         $this->db->initTable($this, new $class, trim($table, '`'));
                     } catch (DbExecuteError $e) {
-                        Error::err("初始化异常：".$e->getMessage(),$e->getTrace(),"Sql");
+                        Error::err("初始化异常：" . $e->getMessage(), $e->getTrace(), "Sql");
                     }
                 }
             }
@@ -87,8 +87,8 @@ abstract class Dao
     {
         $cls = get_called_class();
         $instance = Variables::get($cls);
-        if(empty($instance)){
-            $instance =  new static(null,$cls);
+        if (empty($instance)) {
+            $instance = new static(null, $cls);
             Variables::set($cls, $instance);
         }
         return $instance;
@@ -120,18 +120,19 @@ abstract class Dao
      * 当前操作的表
      * @return string
      */
-     public function getTable(): string{
-         if(!empty($this->table))return $this->table;
-         if(!empty($this->child) ){
-             $array = explode("\\", $this->child);
-             $class = str_replace("Dao","",end($array));
-             $pattern = '/(?<=[a-z])([A-Z])/';
-             $replacement = '_$1';
-             $this->table = strtolower(preg_replace($pattern, $replacement, $class));
-             return $this->table;
-         }
-       throw new DbExecuteError("未定义数据表");
-     }
+    public function getTable(): string
+    {
+        if (!empty($this->table)) return $this->table;
+        if (!empty($this->child)) {
+            $array = explode("\\", $this->child);
+            $class = str_replace("Dao", "", end($array));
+            $pattern = '/(?<=[a-z])([A-Z])/';
+            $replacement = '_$1';
+            $this->table = strtolower(preg_replace($pattern, $replacement, $class));
+            return $this->table;
+        }
+        throw new DbExecuteError("未定义数据表");
+    }
 
     /**
      * 获取指定条件下的数据量
@@ -308,7 +309,7 @@ abstract class Dao
      * @param array $condition 查询条件
      * @return mixed|null
      */
-    protected function find(Field $field = null, array $condition = [],$nocache = true): mixed
+    protected function find(Field $field = null, array $condition = [], $nocache = true): mixed
     {
         if ($field === null) $field = new Field();
         $result = $this->select($field)->where($condition)->limit()->noCache($nocache)->commit();
@@ -353,16 +354,15 @@ abstract class Dao
      * @param string $orderBy
      * @return int|array
      */
-    function getAll(?array $fields = [], array $where = [], bool $object = true, ?int $start = null, int $size = 10, &$page = null,$orderBy = ""): int|array
+    function getAll(?array $fields = [], array $where = [], bool $object = true, ?int $start = null, int $size = 10, &$page = null, $orderBy = ""): int|array
     {
         if ($fields === null) $fields = [];
         if ($start === null) return $this->select(...$fields)->where($where)->commit($object);
-        if(!empty($orderBy)){
+        if (!empty($orderBy)) {
             return $this->select(...$fields)->page($start, $size, 10, $page)->where($where)->orderBy($orderBy)->commit($object);
         }
         return $this->select(...$fields)->page($start, $size, 10, $page)->where($where)->commit($object);
     }
-
 
 
 }

@@ -135,7 +135,7 @@ class SelectOperation extends BaseOperation
     public function commit($object = true)
     {
 
-        if($object && str_contains($this->opt["table_name"],",")){
+        if ($object && str_contains($this->opt["table_name"], ",")) {
             $object = false;
         }
 
@@ -171,7 +171,7 @@ class SelectOperation extends BaseOperation
             $this->page = new Page($page);
         }
 
-        $result = parent::__commit(true,$this->cache);
+        $result = parent::__commit(true, $this->cache);
         if ($object && $this->model !== null) {
             return $this->translate2Model($this->model, $result);
         } else {

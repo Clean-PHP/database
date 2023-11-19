@@ -35,7 +35,7 @@ abstract class BaseOperation
      * @param $db DB 数据库对象
      * @param $model ?string 数据模型
      */
-    public function __construct(Db &$db,  string $model = null)
+    public function __construct(Db &$db, string $model = null)
     {
         $this->db = $db;
         $this->model = $model;
@@ -48,21 +48,21 @@ abstract class BaseOperation
      */
     public function table(string ...$tableName): BaseOperation
     {
-        if(is_array($tableName)){
+        if (is_array($tableName)) {
             $names = $tableName;
-        }else{
-            $names = explode(",",$tableName);
+        } else {
+            $names = explode(",", $tableName);
         }
 
         $this->tables = $names;
         $table = "";
-        foreach ($names as $name){
-            if(!empty($name)){
-                $table.= '`' . $name . '`,';
+        foreach ($names as $name) {
+            if (!empty($name)) {
+                $table .= '`' . $name . '`,';
             }
 
         }
-        $this->opt['table_name'] = trim($table,",");
+        $this->opt['table_name'] = trim($table, ",");
         return $this;
     }
 
@@ -71,12 +71,12 @@ abstract class BaseOperation
      * 提交
      * @return array|int
      */
-    protected function __commit($readonly = false,$cache = false): int|array
+    protected function __commit($readonly = false, $cache = false): int|array
     {
         if ($this->tra_sql == null) $this->translateSql();
         $sql = $this->tra_sql;
         $this->tra_sql = null;
-        return $this->db->execute($sql, $this->bind_param, $readonly,$cache, $this->tables);
+        return $this->db->execute($sql, $this->bind_param, $readonly, $cache, $this->tables);
     }
 
     /**
@@ -111,7 +111,7 @@ abstract class BaseOperation
             reset($conditions);
 
             foreach ($conditions as $key => &$condition) {
-                if (is_array($condition)) throw new DbFieldError("数组元素不允许出现在查询语句中：" . json_encode($condition), $condition);
+                if (is_array($condition)) throw new DbFieldError("数组元素不允许出现在查询语句中：" . json_encode($condition), $key);
                 if (is_int($key)) {
                     $isMatched = preg_match_all('/in(\s+)?\((\s+)?(:\w+)\)/', strval($condition), $matches);
 
@@ -121,7 +121,7 @@ abstract class BaseOperation
                             if (isset($conditions[$key2])) {
                                 $value = $conditions[$key2];
                                 unset($conditions[$key2]);
-                                $values = is_string($value)?explode(",", $value):$value;
+                                $values = is_string($value) ? explode(",", $value) : $value;
                                 $new = "";
                                 $len = sizeof($values);
                                 for ($j = 0; $j < $len; $j++) {

@@ -60,37 +60,42 @@ class Mysql extends Driver
         $sql = 'CREATE TABLE IF NOT EXISTS `' . $table . '`(';
         $name = $primary_keys->name;
         $primary = $name;
-        $sql .= $this->renderKey($primary_keys,$model->getUnique()) . ",";
+        $sql .= $this->renderKey($primary_keys, $model->getUnique()) . ",";
 
 
         foreach (get_object_vars($model) as $key => $value) {
             if ($key === $primary) continue;
-            $sql .= $this->renderKey(new SqlKey($key, $value),$model->getUnique()) . ",";
+            $sql .= $this->renderKey(new SqlKey($key, $value), $model->getUnique()) . ",";
         }
         $sql .= "PRIMARY KEY (";
         $sql .= "`$primary`";
         $sql .= ")";
-        $sql .= ')ENGINE=InnoDB DEFAULT CHARSET=' . $this->dbFile->charset . ';';
 
+        $full = $model->getFullTextKeys();
+        if (!empty($full)) {
+            $sql .= ",";
+            $sql .= "FULLTEXT ( " . join(',', $full) . " )";
+        }
+
+        $sql .= ')ENGINE=InnoDB DEFAULT CHARSET=' . $this->dbFile->charset . ';';
+//getFullTextKeys
         return $sql;
 
     }
 
-    public function renderKey(SqlKey $sqlKey,array $unique = []): string
+    public function renderKey(SqlKey $sqlKey, array $unique = []): string
     {
         if ($sqlKey->type === SqlKey::TYPE_TEXT && $sqlKey->value !== null)
             $sqlKey->value = str_replace("'", "\'", $sqlKey->value);
-        if (in_array($sqlKey->name,$unique)){
-            if($sqlKey->type === SqlKey::TYPE_INT)return "`$sqlKey->name` BIGINT DEFAULT $sqlKey->value UNIQUE";
-            if($sqlKey->type === SqlKey::TYPE_TEXT)return "`$sqlKey->name` VARCHAR(191) DEFAULT '$sqlKey->value' UNIQUE";
+        if (in_array($sqlKey->name, $unique)) {
+            if ($sqlKey->type === SqlKey::TYPE_INT) return "`$sqlKey->name` BIGINT DEFAULT $sqlKey->value UNIQUE";
+            if ($sqlKey->type === SqlKey::TYPE_TEXT) return "`$sqlKey->name` VARCHAR(191) DEFAULT '$sqlKey->value' UNIQUE";
         }
         if ($sqlKey->type === SqlKey::TYPE_INT && $sqlKey->auto) return "`$sqlKey->name` BIGINT AUTO_INCREMENT";
 
         elseif ($sqlKey->type === SqlKey::TYPE_INT && !$sqlKey->auto) return "`$sqlKey->name` BIGINT DEFAULT '$sqlKey->value'";
 
-        elseif ($sqlKey->type === SqlKey::TYPE_BOOLEAN) return "`$sqlKey->name` TINYINT(1) DEFAULT ".intval($sqlKey->value)." ";
-
-
+        elseif ($sqlKey->type === SqlKey::TYPE_BOOLEAN) return "`$sqlKey->name` TINYINT(1) DEFAULT " . intval($sqlKey->value) . " ";
 
 
         elseif ($sqlKey->type === SqlKey::TYPE_TEXT && $sqlKey->length !== 0) return "`$sqlKey->name` VARCHAR(" . $sqlKey->length . ") DEFAULT '$sqlKey->value'";
@@ -101,7 +106,7 @@ class Mysql extends Driver
 
         elseif ($sqlKey->type === SqlKey::TYPE_FLOAT) return "`$sqlKey->name` DECIMAL(10, 2) DEFAULT '$sqlKey->value'";
 
-        else{
+        else {
             return "`$sqlKey->name` TEXT DEFAULT NULL";
         }
     }

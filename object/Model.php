@@ -41,10 +41,10 @@ abstract class Model extends ArgObject
         }
 
         if (!$this->fromDb && (is_array($demo) || is_object($demo)) && is_string($val)) {
-            $val = json_decode($val);
+            $val = json_decode($val, true);
         }
 
-        return true;
+        return parent::onParseType($key, $val, $demo);
     }
 
     /**
