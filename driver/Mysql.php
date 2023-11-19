@@ -74,7 +74,7 @@ class Mysql extends Driver
         $full = $model->getFullTextKeys();
         if (!empty($full)) {
             $sql .= ",";
-            $sql .= "FULLTEXT ( " . join(',', $full) . " )";
+            $sql .= "FULLTEXT ( " . join(',', $full) . " ) WITH PARSER ngram";
         }
 
         $sql .= ')ENGINE=InnoDB DEFAULT CHARSET=' . $this->dbFile->charset . ';';
