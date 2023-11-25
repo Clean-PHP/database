@@ -106,5 +106,8 @@ abstract class Model extends ArgObject
         return ["id"];
     }
 
-
+    public function getFullTextKeys(): array
+    {
+        return [];
+    }
 }
